@@ -6,14 +6,14 @@ import {
   PluginUISpec,
 } from "molstar/lib/mol-plugin-ui/spec";
 import { PluginSpec } from "molstar/lib/mol-plugin/spec";
-import { CreateSpheresProvider, SphereData } from "./primitives";
+import { CreateSpheresProvider, PrimitivesData } from "./primitives";
 
 const MySpec: PluginUISpec = {
   ...DefaultPluginUISpec(),
   layout: {
     initial: {
-      isExpanded: true,
-      showControls: true,
+      isExpanded: false,
+      showControls: false,
       regionState: {
         bottom: "full",
         left: "full",
@@ -36,11 +36,16 @@ export class Context {
     this.plugin.init();
   }
 
-  async renderSpheres(data: SphereData) {
+  async renderSpheres(data: PrimitivesData) {
     const update = this.plugin.build();
+    const webgl = this.plugin.canvas3dContext?.webgl;
+
     update
       .toRoot()
-      .apply(CreateSpheresProvider, { data })
+      .apply(CreateSpheresProvider, {
+        data,
+        webgl,
+      })
       .apply(StateTransforms.Representation.ShapeRepresentation3D, {
         alpha: 1,
       });
